@@ -1,0 +1,53 @@
+{
+  "name": "mini-vue",
+  "version": "0.0.0",
+  "packageManager": "pnpm@6.32.3",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://github.com/derlans/mini-vue#readme",
+  "bugs": {
+    "url": "https://github.com/derlans/mini-vue/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derlans/mini-vue.git"
+  },
+  "funding": "https://github.com/sponsors/derlans",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.20.2",
+    "@babel/types": "^7.17.0",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-replace": "^2.3.3",
+    "@rollup/plugin-typescript": "^8.2.5",
+    "@types/jest": "^26.0.0",
+    "eslint": "^8.13.0",
+    "jest": "^27.2.3",
+    "pnpm": "^6.32.6",
+    "rollup": "^2.17.1",
+    "rollup-plugin-sourcemaps": "^0.6.2",
+    "ts-jest": "^27.0.5",
+    "tslib": "^2.3.1",
+    "typescript": "^4.6.3"
+  }
+}
