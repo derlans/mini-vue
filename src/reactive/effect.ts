@@ -4,7 +4,7 @@ export class ReactiveEffect {
   }
 
   public run() {
-    this._fn()
+    return this._fn()
   }
 }
 let activeEffect: ReactiveEffect | undefined
@@ -39,4 +39,5 @@ export function effect(fn: Function) {
   activeEffect = _effect
   _effect.run()
   activeEffect = undefined
+  return _effect.run.bind(_effect)
 }
