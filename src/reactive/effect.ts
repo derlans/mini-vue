@@ -1,9 +1,12 @@
+import { extend } from './shared'
+
 export class ReactiveEffect {
   public deps: Set< Set<ReactiveEffect>> = new Set()
   public active = true
-  constructor(private _fn: Function, public scheduler?: Function) {
+  public scheduler?: Function
+  public onStop?: Function
+  constructor(private _fn: Function) {
     this._fn = _fn
-    this.scheduler = scheduler
   }
 
   public run() {
@@ -15,6 +18,8 @@ export class ReactiveEffect {
       return
     this.active = false
     clearEffects(this)
+    if (this.onStop)
+      this.onStop()
   }
 }
 function clearEffects(reactiveEffect: ReactiveEffect) {
@@ -59,13 +64,17 @@ export interface ReactiveEffectRunner<T = any> {
   (): T
   effect: ReactiveEffect
 }
-export function effect(fn: Function, options?: { scheduler?: Function }): ReactiveEffectRunner {
-  const { scheduler } = options || {}
-  const _effect = new ReactiveEffect(fn, scheduler)
+export interface effectOptions{
+  scheduler?: Function
+  onStop?: Function
+}
+export function effect<T>(fn: () => T, options?: effectOptions): ReactiveEffectRunner {
+  const _effect = new ReactiveEffect(fn)
+  extend(_effect, options)
   activeEffect = _effect
   _effect.run()
   activeEffect = undefined
-  const runner: ReactiveEffectRunner = _effect.run.bind(_effect) as ReactiveEffectRunner
+  const runner: ReactiveEffectRunner<T> = _effect.run.bind(_effect) as ReactiveEffectRunner
   runner.effect = _effect
   return runner
 }
