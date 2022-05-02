@@ -25,6 +25,7 @@ export class ReactiveEffect {
 function clearEffects(reactiveEffect: ReactiveEffect) {
   for (const dep of reactiveEffect.deps)
     dep.delete(reactiveEffect)
+  reactiveEffect.deps.clear()
 }
 let activeEffect: ReactiveEffect | undefined
 export type EffectMap=Map<string | symbol, Set<ReactiveEffect>>
@@ -71,6 +72,7 @@ export interface effectOptions{
 export function effect<T>(fn: () => T, options?: effectOptions): ReactiveEffectRunner {
   const _effect = new ReactiveEffect(fn)
   extend(_effect, options)
+  // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势
   activeEffect = _effect
   _effect.run()
   activeEffect = undefined
