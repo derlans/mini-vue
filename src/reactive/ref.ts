@@ -7,6 +7,7 @@ class RefImpl<T> {
   public dep: Set<ReactiveEffect> = new Set()
   private _value: T
   private _rawValue: T
+  public __v_isRef = true
   constructor(value: T) {
     this._rawValue = value
     const _value = cover(value)
@@ -25,6 +26,10 @@ class RefImpl<T> {
       triggerEffects(this.dep)
     }
   }
+
+  get rawValue() {
+    return this._rawValue
+  }
 }
 export interface Ref<T> {
   value: T
@@ -40,4 +45,12 @@ export function cover<T>(value: T): T {
   if (isObject(value))
     return reactive(value)
   return value
+}
+
+export function isRef(value: any): value is Ref<any> {
+  return !!value && value.__v_isRef === true
+}
+
+export function unRef(value: any): any {
+  return isRef(value) ? value.value : value
 }
