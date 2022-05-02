@@ -1,4 +1,4 @@
-import { reactive } from '../reactive'
+import { isReactive, reactive } from '../reactive'
 
 describe('reactive', () => {
   it('start', () => {
@@ -8,5 +8,11 @@ describe('reactive', () => {
     expect(reactiveRaw.b).toBe(2)
     expect(reactiveRaw).not.toBe(raw)
     expect(reactiveRaw).toEqual(raw)
+  })
+  it('isReactive should be true', () => {
+    const raw = { a: 1, b: 2 }
+    const reactiveRaw = reactive(raw)
+    expect(isReactive(reactiveRaw)).toBe(true)
+    expect(isReactive(raw)).toBe(false)
   })
 })
