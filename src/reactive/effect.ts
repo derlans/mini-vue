@@ -1,4 +1,4 @@
-import { extend } from './shared'
+import { extend } from '../shared'
 
 export class ReactiveEffect {
   public deps: Set< Set<ReactiveEffect>> = new Set()
