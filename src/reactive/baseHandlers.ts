@@ -1,13 +1,15 @@
 import { isObject } from '../shared'
 import { track, trigger } from './effect'
 import { ReactiveFlags, reactive, readonly } from './reactive'
-export function createGetter(isReadonly = false) {
+export function createGetter(isReadonly = false, shallow = false) {
   return function get<T extends object>(target: T, key: string | symbol) {
     if (key === ReactiveFlags.IS_REACTIVE)
       return !isReadonly
     if (key === ReactiveFlags.IS_READONLY)
       return isReadonly
     const res = Reflect.get(target, key)
+    if (shallow)
+      return res
     if (isObject(res))
       return isReadonly ? readonly(res) : reactive(res)
     if (!isReadonly)
@@ -32,6 +34,7 @@ export const set = createSetter()
 export const readonlyGet = createGetter(true)
 export const readonlySet = createSetter(true)
 
+export const readonlyShallowGet = createGetter(true, true)
 export interface ReactiveEffect<T extends object> {
   get: (target: T, key: string | symbol) => any
   set: (target: T, key: string | symbol, value: any) => boolean
@@ -43,5 +46,10 @@ export const reactiveHandler: ProxyHandler<any> = {
 
 export const readonlyHandler: ProxyHandler<any> = {
   get: readonlyGet,
+  set: readonlySet,
+}
+
+export const readonlyShallowHandler: ProxyHandler<any> = {
+  get: readonlyShallowGet,
   set: readonlySet,
 }
