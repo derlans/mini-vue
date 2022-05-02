@@ -1,5 +1,9 @@
 import { extend } from '../shared'
-
+let activeEffect: ReactiveEffect | undefined
+let shouldTrack = false
+export function isTracking() {
+  return shouldTrack && activeEffect !== undefined
+}
 export class ReactiveEffect {
   public deps: Set< Set<ReactiveEffect>> = new Set()
   public active = true
@@ -10,7 +14,15 @@ export class ReactiveEffect {
   }
 
   public run() {
-    return this._fn()
+    if (!this.active)
+      return this._fn()
+    // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势
+    activeEffect = this as ReactiveEffect
+    shouldTrack = true
+    const res = this._fn()
+    shouldTrack = false
+    activeEffect = undefined
+    return res
   }
 
   public stop() {
@@ -27,11 +39,13 @@ function clearEffects(reactiveEffect: ReactiveEffect) {
     dep.delete(reactiveEffect)
   reactiveEffect.deps.clear()
 }
-let activeEffect: ReactiveEffect | undefined
 export type EffectMap=Map<string | symbol, Set<ReactiveEffect>>
 export type TrackMap=Map<object, EffectMap>
 const trackMap: TrackMap = new Map()
 export function track(target: object, key: string | symbol) {
+  // 如果不需要收集直接返回
+  if (!(shouldTrack && activeEffect !== undefined))
+    return
   // 依赖收集
   let effectMap = trackMap.get(target)
   if (!effectMap)
@@ -39,7 +53,7 @@ export function track(target: object, key: string | symbol) {
   let effects = effectMap.get(key)
   if (!effects)
     effectMap.set(key, effects = new Set())
-  if (activeEffect && !effects.has(activeEffect)) {
+  if (!effects.has(activeEffect!)) {
     effects.add(activeEffect)
     // 把储存了这个依赖的set存入ReactiveEffect的deps中 这样ReactiveEffect就知道被哪些依赖了
     activeEffect.deps.add(effects)
@@ -72,10 +86,7 @@ export interface effectOptions{
 export function effect<T>(fn: () => T, options?: effectOptions): ReactiveEffectRunner {
   const _effect = new ReactiveEffect(fn)
   extend(_effect, options)
-  // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势
-  activeEffect = _effect
   _effect.run()
-  activeEffect = undefined
   const runner: ReactiveEffectRunner<T> = _effect.run.bind(_effect) as ReactiveEffectRunner
   runner.effect = _effect
   return runner
