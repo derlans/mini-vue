@@ -53,14 +53,16 @@ export function track(target: object, key: string | symbol) {
   let effects = effectMap.get(key)
   if (!effects)
     effectMap.set(key, effects = new Set())
-  if (!effects.has(activeEffect!)) {
-    effects.add(activeEffect)
-    // 把储存了这个依赖的set存入ReactiveEffect的deps中 这样ReactiveEffect就知道被哪些依赖了
-    activeEffect.deps.add(effects)
-  }
+  trackEffects(effects)
   return effects
 }
-
+export function trackEffects(effects: Set<ReactiveEffect>) {
+  if (!effects.has(activeEffect!)) {
+    effects.add(activeEffect!)
+    // 把储存了这个依赖的set存入ReactiveEffect的deps中 这样ReactiveEffect就知道被哪些依赖了
+    activeEffect!.deps.add(effects)
+  }
+}
 export function trigger(target: object, key: string | symbol) {
   const effects = trackMap.get(target)
   if (!effects)
@@ -68,7 +70,10 @@ export function trigger(target: object, key: string | symbol) {
   const effectsSet = effects.get(key)
   if (!effectsSet)
     return
-  for (const effect of effectsSet) {
+  triggerEffects(effectsSet)
+}
+export function triggerEffects(effects: Set<ReactiveEffect>) {
+  for (const effect of effects) {
     if (effect.scheduler)
       effect.scheduler()
     else
