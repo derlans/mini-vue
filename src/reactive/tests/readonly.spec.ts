@@ -1,4 +1,4 @@
-import { isReadonly, readonly } from '../reactive'
+import { isProxy, isReadonly, readonly } from '../reactive'
 
 describe('readonly', () => {
   it('should be readonly', () => {
@@ -10,6 +10,7 @@ describe('readonly', () => {
     expect(readonlyData.a).toBe(1)
     expect(console.warn).toHaveBeenCalledTimes(1)
     expect(isReadonly(readonlyData)).toBe(true)
+    expect(isProxy(readonlyData)).toBe(true)
   })
   it('nested readonly', () => {
     const original = {
