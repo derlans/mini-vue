@@ -9,14 +9,15 @@ export class ReactiveEffect {
   public active = true
   public scheduler?: Function
   public onStop?: Function
-  constructor(private _fn: Function) {
+  constructor(private _fn: Function, scheduler?: Function) {
     this._fn = _fn
+    this.scheduler = scheduler
   }
 
   public run() {
     if (!this.active)
       return this._fn()
-    // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势
+    // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势 找到了 因为还有其他地方要用这个
     activeEffect = this as ReactiveEffect
     shouldTrack = true
     const res = this._fn()
