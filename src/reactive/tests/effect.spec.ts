@@ -107,4 +107,21 @@ describe('effect', () => {
     stop(runner)
     expect(onStop).toHaveBeenCalled()
   })
+  it('分支切换', () => {
+    const obj = reactive({ a: true, b: 3 })
+    let dummy = 1
+    const event = jest.fn(() => {
+      if (obj.a)
+        dummy = obj.b
+      else
+        dummy++
+    })
+    effect(event)
+    expect(dummy).toBe(3)
+    obj.a = false
+    expect(dummy).toBe(4)
+    obj.b++
+    expect(dummy).toBe(4)
+    expect(event).toHaveBeenCalledTimes(2)
+  })
 })

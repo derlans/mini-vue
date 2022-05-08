@@ -20,6 +20,7 @@ export class ReactiveEffect {
     // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势 找到了 因为还有其他地方要用这个
     activeEffect = this as ReactiveEffect
     shouldTrack = true
+    clearEffects(this)
     const res = this._fn()
     shouldTrack = false
     activeEffect = undefined
@@ -74,7 +75,9 @@ export function trigger(target: object, key: string | symbol) {
   triggerEffects(effectsSet)
 }
 export function triggerEffects(effects: Set<ReactiveEffect>) {
-  for (const effect of effects) {
+  // 防止死循环 因为遍历的同时要修改
+  const toRunEffects = new Set(effects)
+  for (const effect of toRunEffects) {
     if (effect.scheduler)
       effect.scheduler()
     else
