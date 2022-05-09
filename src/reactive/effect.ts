@@ -1,5 +1,6 @@
 import { extend } from '../shared'
 let activeEffect: ReactiveEffect | undefined
+const effectStack: ReactiveEffect[] = []
 let shouldTrack = false
 export function isTracking() {
   return shouldTrack && activeEffect !== undefined
@@ -19,11 +20,14 @@ export class ReactiveEffect {
       return this._fn()
     // 为什么要把ReactiveEffect状态的操作封装进入ReactiveEffect 暂时还没有发现优势 找到了 因为还有其他地方要用这个
     activeEffect = this as ReactiveEffect
+    effectStack.push(this)
     shouldTrack = true
     clearEffects(this)
     const res = this._fn()
-    shouldTrack = false
-    activeEffect = undefined
+    effectStack.pop()
+    if (effectStack.length === 0)
+      shouldTrack = false
+    activeEffect = effectStack[effectStack.length - 1]
     return res
   }
 
