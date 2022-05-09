@@ -31,7 +31,7 @@ describe('effect', () => {
     expect(effectRunCount2).toBe(21)
   })
   // TODO 解决effect无限循环的问题
-  it.skip('effect self Maximum call stack', () => {
+  it('effect self Maximum call stack', () => {
     const raw = { a: 1 }
     const reactiveRaw = reactive(raw)
     try {
@@ -68,6 +68,12 @@ describe('effect', () => {
     let dummy
     let run: any
     let runner: any
+    const run2 = jest.fn()
+    effect(run2, {
+      scheduler: (fn) => {
+        expect(fn).toBe(run2)
+      },
+    })
     const scheduler = jest.fn(() => {
       run = runner
     })
@@ -78,6 +84,7 @@ describe('effect', () => {
       },
       { scheduler },
     )
+
     expect(scheduler).not.toHaveBeenCalled()
     expect(dummy).toBe(1)
     // should be called on first trigger
@@ -161,5 +168,21 @@ describe('effect', () => {
     expect(temp1).toBe(false)
     expect(count1).toBe(2)
     expect(count2).toBe(3)
+  })
+  it('lazy effect', () => {
+    const obj = reactive({ bar: 1 })
+    let count = 0
+    const fn = jest.fn(() => {
+      count = obj.bar
+    })
+    const run = effect(fn, { lazy: true })
+    expect(fn).not.toHaveBeenCalled()
+    expect(count).toBe(0)
+    obj.bar = 2
+    expect(fn).not.toHaveBeenCalled()
+    expect(count).toBe(0)
+    run()
+    expect(fn).toHaveBeenCalledTimes(1)
+    expect(count).toBe(2)
   })
 })

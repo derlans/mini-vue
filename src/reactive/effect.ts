@@ -8,9 +8,9 @@ export function isTracking() {
 export class ReactiveEffect {
   public deps: Set< Set<ReactiveEffect>> = new Set()
   public active = true
-  public scheduler?: Function
+  public scheduler?: (fn: Function) => void
   public onStop?: Function
-  constructor(private _fn: Function, scheduler?: Function) {
+  constructor(public _fn: Function, scheduler?: (fn: Function) => void) {
     this._fn = _fn
     this.scheduler = scheduler
   }
@@ -82,10 +82,11 @@ export function triggerEffects(effects: Set<ReactiveEffect>) {
   // 防止死循环 因为遍历的同时要修改
   const toRunEffects = new Set(effects)
   for (const effect of toRunEffects) {
+    // 防止无限递归
     if (activeEffect === effect)
       continue
     if (effect.scheduler)
-      effect.scheduler()
+      effect.scheduler(effect._fn)
     else
       effect.run()
   }
@@ -95,13 +96,15 @@ export interface ReactiveEffectRunner<T = any> {
   effect: ReactiveEffect
 }
 export interface effectOptions{
-  scheduler?: Function
+  scheduler?: (fn: Function) => void
   onStop?: Function
+  lazy?: boolean
 }
-export function effect<T>(fn: () => T, options?: effectOptions): ReactiveEffectRunner {
+export function effect<T>(fn: () => T, options: effectOptions = {}): ReactiveEffectRunner {
   const _effect = new ReactiveEffect(fn)
   extend(_effect, options)
-  _effect.run()
+  if (!options.lazy)
+    _effect.run()
   const runner: ReactiveEffectRunner<T> = _effect.run.bind(_effect) as ReactiveEffectRunner
   runner.effect = _effect
   return runner
