@@ -46,4 +46,18 @@ describe('computed', () => {
     cValue.value
     expect(getter).toHaveBeenCalledTimes(2)
   })
+  it('分支切换', () => {
+    const obj = reactive({ a: true, b: 3 })
+    const v = computed(() => {
+      if (obj.a)
+        return true
+      else
+        return obj.b
+    })
+    expect(v.value).toBe(true)
+    obj.a = false
+    expect(v.value).toBe(3)
+    obj.b++
+    expect(v.value).toBe(4)
+  })
 })
