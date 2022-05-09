@@ -30,7 +30,8 @@ describe('effect', () => {
     expect(effectRunCount).toBe(20)
     expect(effectRunCount2).toBe(21)
   })
-  it.skip('effect self', () => {
+  // TODO 解决effect无限循环的问题
+  it.skip('effect self Maximum call stack', () => {
     const raw = { a: 1 }
     const reactiveRaw = reactive(raw)
     try {
@@ -41,6 +42,14 @@ describe('effect', () => {
     catch (e) {
       expect((e as Error).message).toBe('Maximum call stack size exceeded')
     }
+  })
+  it('effect self', () => {
+    const raw = { a: 1 }
+    const reactiveRaw = reactive(raw)
+    effect(() => {
+      reactiveRaw.a = reactiveRaw.a + 1
+    })
+    expect(raw.a).toBe(2)
   })
   it('effect runner', () => {
     const reactiveRaw = reactive({ a: 1 })

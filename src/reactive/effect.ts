@@ -82,6 +82,8 @@ export function triggerEffects(effects: Set<ReactiveEffect>) {
   // 防止死循环 因为遍历的同时要修改
   const toRunEffects = new Set(effects)
   for (const effect of toRunEffects) {
+    if (activeEffect === effect)
+      continue
     if (effect.scheduler)
       effect.scheduler()
     else
