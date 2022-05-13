@@ -1,3 +1,4 @@
+import { effect } from '../effect'
 import { isProxy, isReactive, reactive } from '../reactive'
 
 describe('reactive', () => {
@@ -28,5 +29,20 @@ describe('reactive', () => {
     expect(isReactive(observed.nested)).toBe(true)
     expect(isReactive(observed.array)).toBe(true)
     expect(isReactive(observed.array[0])).toBe(true)
+  })
+  // TODO fix this test
+  it.skip('原型链', () => {
+    const obj: any = {}
+    const proto = { bar: 1 }
+    const child = reactive(obj)
+    const parent = reactive(proto)
+    Object.setPrototypeOf(child, parent)
+    const fn = jest.fn(() => {
+      child.bar
+    })
+    effect(fn)
+    expect(fn).toHaveBeenCalledTimes(1)
+    child.bar = 2
+    expect(fn).toHaveBeenCalledTimes(2)
   })
 })
