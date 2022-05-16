@@ -14,8 +14,8 @@
     "url": "git+https://github.com/derlans/mini-vue.git"
   },
   "funding": "https://github.com/sponsors/derlans",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./lib/mini-vue.cjs.js",
+  "module": "./lib/mini-vue.esm.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
