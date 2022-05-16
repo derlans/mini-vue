@@ -1,4 +1,4 @@
-import { h } from '../src/runtime-core/h'
+import { h } from '../lib/mini-vue.esm.js'
 export const App = {
   render() {
     return h('div', null, `hello world${this.msg}`)

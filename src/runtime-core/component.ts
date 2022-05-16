@@ -24,6 +24,7 @@ export function setupComponent(instance: ComponentInstance) {
   // initProps
   // initSlotste
   setupStatefulComponent(instance)
+  finishComponentSetup(instance)
 }
 
 export function setupStatefulComponent(instance: ComponentInstance) {
@@ -38,7 +39,7 @@ export function handleSetupResult(instance: ComponentInstance, setupResult: any)
   if (typeof setupResult === 'object')
     instance.setupState = setupResult
 }
-export function finishComponentSetuo(instance: ComponentInstance) {
+export function finishComponentSetup(instance: ComponentInstance) {
   const component = instance.type
   if (component.render)
     instance.render = component.render
