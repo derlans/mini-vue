@@ -8,14 +8,14 @@ export interface ComponentOptions{
 }
 export interface ComponentInstance{
   vnode: VNode
-  type: VNode['type']
+  type: ComponentOptions
   setupState?: object
   render?: Function
 }
 export function createComponentInstance(vnode: VNode): ComponentInstance {
   const componentInstance = {
     vnode,
-    type: vnode.type,
+    type: vnode.type as ComponentOptions,
   }
   return componentInstance
 }
@@ -40,7 +40,7 @@ export function handleSetupResult(instance: ComponentInstance, setupResult: any)
     instance.setupState = setupResult
 }
 export function finishComponentSetup(instance: ComponentInstance) {
-  const component = instance.type
+  const component = instance.type as ComponentOptions
   if (component.render)
     instance.render = component.render
 }

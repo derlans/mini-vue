@@ -1,14 +1,15 @@
 import type { ComponentOptions } from './component'
 export type Tags='div' | 'img' | 'a'
+export type VNodeType=ComponentOptions | Tags
 export interface VNode{
-  type: ComponentOptions
+  type: VNodeType
   props?: any
-  children?: string | Array<any>
+  children?: Array<string | VNode> | string
 }
 export function createVNode(
-  type: ComponentOptions,
+  type: VNodeType,
   props?: any,
-  children?: string | Array<VNode>,
+  children?: Array<string> | Array<VNode>,
 ): VNode {
   const vnode = {
     type,
