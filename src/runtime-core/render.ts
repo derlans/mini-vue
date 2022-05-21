@@ -31,8 +31,9 @@ export function mountComponent(vnode: VNode, container: Element) {
 }
 
 export function setupRenderEffect(instance: ComponentInstance, container: Element) {
-  const subTree = instance.render!.call(instance.setupState)
+  const subTree = instance.render!.call(instance.proxy) as VNode
   patch(subTree, null, container)
+  instance.vnode.el = subTree.el
 }
 
 export function processElement(vnode: VNode, container: Element) {
@@ -42,7 +43,7 @@ export function mountElement(vnode: VNode, container: Element) {
   // TODO Props
   const { children, props } = vnode
   const type = vnode.type as Tags
-  const el = document.createElement(type)
+  const el = vnode.el = document.createElement(type)
   // handle props
   if (props) {
     for (const key in props) {

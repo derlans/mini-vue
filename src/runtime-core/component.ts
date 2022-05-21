@@ -1,3 +1,4 @@
+import { componentProxyHandle } from './componentProxyHandle'
 import type { VNode } from './vNode'
 
 export interface ComponentOptions{
@@ -11,6 +12,7 @@ export interface ComponentInstance{
   type: ComponentOptions
   setupState?: object
   render?: Function
+  proxy?: object
 }
 export function createComponentInstance(vnode: VNode): ComponentInstance {
   const componentInstance = {
@@ -34,6 +36,7 @@ export function setupStatefulComponent(instance: ComponentInstance) {
     const setupResult = setup()
     handleSetupResult(instance, setupResult)
   }
+  instance.proxy = new Proxy({ instance }, componentProxyHandle as any)
 }
 export function handleSetupResult(instance: ComponentInstance, setupResult: any) {
   if (typeof setupResult === 'object')

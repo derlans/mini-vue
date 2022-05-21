@@ -5,6 +5,7 @@ export interface VNode{
   type: VNodeType
   props?: any
   children?: Array<string | VNode> | string
+  el?: Element
 }
 export function createVNode(
   type: VNodeType,

@@ -13,8 +13,10 @@ const children = {
   },
   name: 'children',
 }
+window.self = null
 export const App = {
   render() {
+    window.self = this
     const child = h(children)
     return h('div', { value: this.obj.msg, class: 'red' }, [`hello world${this.obj.msg}`, child])
   },
