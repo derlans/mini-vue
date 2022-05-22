@@ -2,12 +2,18 @@ import { shallowReadonly } from '../reactive'
 import { initProps } from './componentProps'
 import { componentProxyHandle } from './componentProxyHandle'
 import type { VNode } from './vNode'
-
+import { emit } from './componentEmit'
+interface Emit{
+  (eventName: string, ...args: any[]): void
+}
+interface Setup{
+  (props: any, utils: { emit: Emit }): void
+}
 export interface ComponentOptions{
   name?: string
   template?: string
-  setup?: (props?: any) => any
-  render?: (props: any) => any
+  setup?: Setup
+  render?: () => any
 }
 export interface ComponentInstance{
   vnode: VNode
@@ -15,12 +21,13 @@ export interface ComponentInstance{
   setupState?: object
   render?: Function
   proxy?: object
-  props?: object
+  props: object
 }
 export function createComponentInstance(vnode: VNode): ComponentInstance {
   const componentInstance = {
     vnode,
     type: vnode.type as ComponentOptions,
+    props: {},
   }
   return componentInstance
 }
@@ -37,7 +44,9 @@ export function setupStatefulComponent(instance: ComponentInstance) {
   const props = instance.props
   const { setup } = ComponentOptions
   if (setup) {
-    const setupResult = setup(shallowReadonly(props || {}))
+    const setupResult = setup(shallowReadonly(props), {
+      emit: emit.bind(null, instance),
+    })
     handleSetupResult(instance, setupResult)
   }
   instance.proxy = new Proxy({ instance }, componentProxyHandle as any)

@@ -27,7 +27,7 @@ export function createVNode(
     shapeFlag = shapeFlag | shapeFlags.TEXT_CHILDREN
   const vnode = {
     type,
-    props,
+    props: props || {},
     children,
     shapeFlag,
   }

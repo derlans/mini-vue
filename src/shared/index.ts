@@ -14,3 +14,7 @@ export function isOn(key: string): boolean {
 export function isOwn(obj: object, key: string | symbol): boolean {
   return Object.hasOwnProperty.call(obj, key)
 }
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
