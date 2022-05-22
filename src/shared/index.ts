@@ -10,3 +10,7 @@ export function hasChanged(value: any, oldValue: any): boolean {
 export function isOn(key: string): boolean {
   return /^on[A-Z]/.test(key)
 }
+
+export function isOwn(obj: object, key: string | symbol): boolean {
+  return Object.hasOwnProperty.call(obj, key)
+}

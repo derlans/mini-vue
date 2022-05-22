@@ -1,6 +1,7 @@
 import { h, reactive } from '../lib/mini-vue.esm.js'
 const children = {
   render() {
+    console.log(this.props, 'this 也可以访问props')
     return h('input', {
       value: this.obj.msg,
       onInput: (e) => {
