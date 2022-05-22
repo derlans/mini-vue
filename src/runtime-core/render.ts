@@ -1,4 +1,5 @@
 // import { effect } from '../reactive'
+import { isOn } from '../shared'
 import { shapeFlags } from '../shared/shapeFlags'
 import type { ComponentInstance } from './component'
 import { createComponentInstance, setupComponent } from './component'
@@ -47,7 +48,10 @@ export function mountElement(vnode: VNode, container: Element) {
   if (props) {
     for (const key in props) {
       const value = props[key]
-      el.setAttribute(key, value)
+      if (isOn(key))
+        el.addEventListener(key.slice(2).toLowerCase(), value)
+      else
+        el.setAttribute(key, value)
     }
   }
   // handle children
@@ -63,7 +67,7 @@ function mountChildren(children: Array<string | VNode>, container: Element) {
     if (typeof child === 'string')
       processText(child, container)
     else
-      processComponent(child, container)
+      patch(child, null, container)
   }
 }
 export function processText(text: string, container: Element) {
