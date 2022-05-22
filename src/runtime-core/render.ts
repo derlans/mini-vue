@@ -1,9 +1,8 @@
 // import { effect } from '../reactive'
-import { isObject } from '../shared'
+import { shapeFlags } from '../shared/shapeFlags'
 import type { ComponentInstance } from './component'
 import { createComponentInstance, setupComponent } from './component'
 import type { Tags, VNode } from './vNode'
-
 export function render(vnode: VNode, container: Element) {
   patch(vnode, null, container)
 }
@@ -11,9 +10,9 @@ export function render(vnode: VNode, container: Element) {
 export function patch(newVnode: VNode, oldVnode: VNode | null, container: Element) {
   // TODO 处理不同的vnode
   // removeAllChild(container)
-  if (typeof newVnode.type === 'string')
+  if (newVnode.shapeFlag & shapeFlags.ELEMENT)
     mountElement(newVnode, container)
-  else if (isObject(newVnode.type))
+  else if (newVnode.shapeFlag & shapeFlags.STATEFUL_COMPONENT)
     mountComponent(newVnode, container)
 }
 
@@ -52,10 +51,10 @@ export function mountElement(vnode: VNode, container: Element) {
     }
   }
   // handle children
-  if (typeof children === 'string')
-    processText(children, el)
-  if (Array.isArray(children))
-    mountChildren(children, el)
+  if (vnode.shapeFlag & shapeFlags.TEXT_CHILDREN)
+    processText(children as string, el)
+  if (vnode.shapeFlag & shapeFlags.ARRAY_CHILDREN)
+    mountChildren(children as [], el)
 
   container.appendChild(el)
 }
