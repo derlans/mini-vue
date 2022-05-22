@@ -47,7 +47,7 @@ export function handleSetupResult(instance: ComponentInstance, setupResult: any)
     instance.setupState = setupResult
 }
 export function finishComponentSetup(instance: ComponentInstance) {
-  const component = instance.type as ComponentOptions
+  const component = instance.type
   if (component.render)
     instance.render = component.render
 }
