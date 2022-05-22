@@ -2,6 +2,7 @@ import { isOwn } from '../shared'
 import type { ComponentInstance } from './component'
 const propoertiesMap = {
   $el: (instance: ComponentInstance) => instance.vnode.el,
+  $slots: (instance: ComponentInstance) => instance.slots,
 }
 type Propoerties='$el'
 export const componentProxyHandle = {

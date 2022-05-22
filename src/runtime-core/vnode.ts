@@ -4,10 +4,11 @@ import { isObject } from '../shared'
 import type { ComponentOptions } from './component'
 export type Tags='div' | 'img' | 'a'
 export type VNodeType=ComponentOptions | Tags
+export type Slot = Record<string | symbol, () => VNode> |(() => VNode)
 export interface VNode{
   type: VNodeType
   props?: any
-  children?: Array<string | VNode> | string
+  children?: Array<string | VNode> | string | Slot
   el?: Element
   shapeFlag: number
 }

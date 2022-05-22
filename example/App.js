@@ -2,13 +2,14 @@ import { h, reactive } from '../lib/mini-vue.esm.js'
 const children = {
   render() {
     console.log(this.props, 'this 也可以访问props')
+    console.log(this.$slots.slot1())
     return h('input', {
       value: this.obj.msg,
       onInput: (e) => {
         console.log('input 事件触发成功', e)
         this.emitEvent(e.data)
       },
-    }, ['hello world'])
+    }, ['hello world', this.$slots.slot1()])
   },
   setup(props, { emit }) {
     console.log(props, 'props')
@@ -33,7 +34,8 @@ window.self = null
 export const App = {
   render() {
     window.self = this
-    const child = h(children, { props: '我是props', onTest: this.onTest })
+    const slot1 = () => h('div', null, 'slot')
+    const child = h(children, { props: '我是props', onTest: this.onTest }, { slot1 })
     return h('div', { value: this.obj.msg, class: 'red', onClick: () => { console.log('点击事件触发') } }, [`hello world${this.obj.msg}`, child])
   },
   setup() {

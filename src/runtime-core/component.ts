@@ -1,8 +1,9 @@
 import { shallowReadonly } from '../reactive'
 import { initProps } from './componentProps'
 import { componentProxyHandle } from './componentProxyHandle'
-import type { VNode } from './vNode'
+import type { Slot, VNode } from './vNode'
 import { emit } from './componentEmit'
+import { initSlots } from './componentSlot'
 interface Emit{
   (eventName: string, ...args: any[]): void
 }
@@ -22,18 +23,20 @@ export interface ComponentInstance{
   render?: Function
   proxy?: object
   props: object
+  slots: object
 }
 export function createComponentInstance(vnode: VNode): ComponentInstance {
   const componentInstance = {
     vnode,
     type: vnode.type as ComponentOptions,
     props: {},
+    slots: {},
   }
   return componentInstance
 }
 export function setupComponent(instance: ComponentInstance) {
   // TODO
-  // initSlotste
+  initSlots(instance, instance.vnode.children as Slot)
   initProps(instance, instance.vnode.props)
   setupStatefulComponent(instance)
   finishComponentSetup(instance)
