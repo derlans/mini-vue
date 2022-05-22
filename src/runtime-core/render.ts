@@ -54,15 +54,18 @@ export function mountElement(vnode: VNode, container: Element) {
   // handle children
   if (typeof children === 'string')
     processText(children, el)
-  if (Array.isArray(children)) {
-    children.forEach((child) => {
-      if (typeof child === 'string')
-        processText(child, el)
-      else
-        processComponent(child, el)
-    })
-  }
+  if (Array.isArray(children))
+    mountChildren(children, el)
+
   container.appendChild(el)
+}
+function mountChildren(children: Array<string | VNode>, container: Element) {
+  for (const child of children) {
+    if (typeof child === 'string')
+      processText(child, container)
+    else
+      processComponent(child, container)
+  }
 }
 export function processText(text: string, container: Element) {
   mountText(text, container)
